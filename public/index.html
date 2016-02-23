@@ -15,8 +15,8 @@
 	<link rel="import" href="bower_components/paper-button/paper-button.html">
 	<link rel="import" href="bower_components/voice-elements/dist/voice-player.html">
 	<link rel="import" href="bower_components/voice-elements/dist/voice-recognition.html">
-	<!-- <script src="node_modules/aframe/dist/aframe.js"></script> -->
-	<script src="aframe.js"></script>
+	<script src="node_modules/aframe/dist/aframe.js"></script>
+
 </head>
 
 <style media="screen">
@@ -49,17 +49,17 @@ max-height: 50%;
 
 		<paper-input label="search" type="search" focus value="{{query}}"></paper-input>
 		<paper-button raised on-click="search">search</paper-button>
-		</template>
+
 
 		<voice-recognition hidden="{{!voiceRecognitionEnabled}}" id="voiceRecognizer" on-result="voiceRecognized"></voice-recognition>
 
-		<voice-player hidden="{{!soundEnabled}}" id="voicePlayer" accent="en-GB" text="Hey there! Welcome to the Europeana - VR -	 explorer! Please say a topic you want to explore into your microphone! Or if you prefer not to speak just type your search into the text field. Have fun!"></voice-player>
-
+		<!-- Hey there! Welcome to the Europeana - VR -	 explorer! Please say a topic you want to explore into your microphone! Or if you prefer not to speak just type your search into the text field. -->
+		<voice-player hidden="{{!soundEnabled}}" id="voicePlayer" accent="en-GB" text=" Have fun!"></voice-player>
+		</template>
 
 	<a-scene id="scene" canvas="canvas: #mycanvas">
 		<canvas id="mycanvas"></canvas>
 
-	<a-image id="test" src="test.jpg" look-at="#camera"> </a-image>
 	<a-entity position="0 2.2 4">
 		<a-entity camera id="camera" look-controls wasd-controls>
 

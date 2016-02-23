@@ -11,10 +11,10 @@ var fetch = require('node-fetch');
 var  apikey = '8dEyJAhFi'
 
 var handleEuropeanaQuery = function(req, res, next) {
-	console.log(req.query)
 	let url = 'http://www.europeana.eu/api/v2/search.json?wskey='+ apikey + '&reusability=restricted&media=true&qf=TYPE:IMAGE&profile=minimal&' + req._parsedUrl.query
 	// console.log(url)
 	// request(url).pipe(res)
+	console.log(url)
 	fetch(url)
 		.then(res => res.json())
 		.then(json => {

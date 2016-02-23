@@ -12,22 +12,15 @@ scene = document.getElementById('scene')
 
 function _createImagePlanes() {
 	let planes = []
-	for (var i = 0; i < 50; i++) {
+	for (var i = 0; i < 51; i++) {
 		let imagePlane = document.createElement('a-image')
+		imagePlane.setAttribute('visible', 'false')
 		let x = (Math.random() * radius) - (radius/2)
 		let y = (Math.random() * (radius/2)) - (radius/4)
 		let z = (Math.random() * radius) - (radius/2)
 		imagePlane.setAttribute('look-at', '#camera')
+		imagePlane.setAttribute('side', 'front')
 		imagePlane.setAttribute('position', `${x} ${y} ${z}`)
-		imagePlane.setAttribute('material', 'opacity: 0.0')
-
-		let anim = document.createElement('a-animation')
-		anim.setAttribute('attribute', 'material.opacity')
-		anim.setAttribute('to', '1.0')
-		anim.setAttribute('dur', '10000')
-		anim.setAttribute('repeat', 'indefinite')
-		anim.setAttribute('begin', 'fade')
-		imagePlane.appendChild(anim)
 
 		planes.push(imagePlane)
 		scene.appendChild(imagePlane)
@@ -41,17 +34,17 @@ function init() {
 	welcomeDialog = document.getElementById('welcome')
 	app.voiceRecognitionEnabled = true
 	app.soundEnabled = true
+
+	// HACK: once injected elements can have a look-at again, remove this
 	imagePlanes = _createImagePlanes()
-	console.log(imagePlanes)
-
-
 
 	welcomeDialog.addEventListener('iron-overlay-closed', function (e) {
 		console.log('dialog closed')
 		console.log('app.voiceRecognitionEnabled', app.voiceRecognitionEnabled)
 		console.log('app.soundEnabled', app.soundEnabled)
-		if(app.soundEnabled) {
 
+		if(app.soundEnabled) {
+			console.log(app.$.voicePlayer)
 			app.$.voicePlayer.addEventListener('start', function(e) {
 				app.$.voiceRecognizer.stop()
 				console.log('stopped voice recognizer')
@@ -69,7 +62,7 @@ function init() {
 			app.$.voiceRecognizer.start()
 		}
 
-		setInterval(update, 2000)
+		setInterval(update, 3000)
 
 
 
@@ -77,35 +70,25 @@ function init() {
 
 	scene.addEventListener('loaded', function (e) {
 		console.log('loaded');
-		document.querySelector('#test').addEventListener('click', function () {
-  	this.setAttribute('material', 'color', 'red');
-  	console.log('I was clicked!');
-		update()
-	});
 		welcomeDialog.open()
 	})
 }
 
 function update() {
-	console.log('update');
-	console.log('can get ob	jects', europeana.canGetObjects())
-	let cam = document.getElementById('camera')
-	// let cam = document.querySelector('#camera')
-
-	// console.log(cam)
 	if(europeana.canGetObjects() === false) return
 
-	europeana.getObject().then((object) => {
-		console.log(imagesAdded);
-		console.log(object.imageSrc);
-		console.log(imagePlanes[imagesAdded])
-		imagePlanes[imagesAdded].setAttribute('hidden', false)
-		imagePlanes[imagesAdded].setAttribute('material', 'src:url(' + object.imageSrc + ') opacity:0.0')
-		// imagePlanes[imagesAdded].emit('fade')
-		document.querySelector('#test').setAttribute('material', 'src:url(' + object.imageSrc + ')')
-		// imagePlanes[imagesAdded].setAttribute('src', 'test.jpg')
-		imagesAdded = (imagesAdded + 1) % 9
+		europeana.getObject().then((object) => {
+			console.log(imagesAdded);
+			console.log(object.imageSrc);
+			console.log(imagePlanes[imagesAdded])
+			imagePlanes[imagesAdded].setAttribute('visible', true)
+			imagePlanes[imagesAdded].setAttribute('material', 'src:url(' + object.imageSrc + ')')
+			// imagePlanes[imagesAdded].emit('fade')
+
+			// imagePlanes[imagesAdded].setAttribute('src', 'test.jpg')
+			imagesAdded = (imagesAdded + 1) % 50
 		})
+
 
 }
 
@@ -117,11 +100,33 @@ app.voiceRecognized = function (e) {
 
 app.search = function() {
 	console.log('search', app.query)
-	app.emitUserNotification('Getting images for ' + app.query)
-	return europeana.search({queryString: app.query}).then((result) => {
-		console.log(result)
-		app.emitUserNotification('Getting images for ' + e.detail.result)
+
+	// clear previous images
+	imagesAdded = 0
+	for (let img of imagePlanes) {
+		img.setAttribute('visible', 'false')
+		img.removeAttribute('material')
+	}
+
+	return europeana.search({queryString: app.query}).then((response) => {
+		console.log(response)
+		if(europeana.canGetObjects() === false) {
+			app.emitUserNotification('Sorry, couldn\'t find enough images for' + app.query + '. Try something else!')
+		} else {
+			console.log(response)
+			app.emitUserNotification('Getting images for ' + app.query)
+		}
+		app.resetQuery()
+
 	})
+}
+
+app.resetQuery = function () {
+	console.log('resetting')
+	app.query = ''
+	app.$.voiceRecognizer.text = ''
+	// if(app.voiceRecognitionEnabled) app.$.voiceRecognizer.start()
+	console.log(app.query + ' ----- ' + app.$.voiceRecognizer.text)
 }
 
 app.emitUserNotification = function (msg) {

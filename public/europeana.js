@@ -2,14 +2,20 @@
 
 var Europeana = function() {
 
-	this.URLBase = 'http://localhost:8000/api/europeana',
+	this.URLBase = 'http://192.168.1.106:8000/api/europeana',
 	this.maxPerPage = 100
 	this.maxQueueSize = 2
 	this.result = {}
 	this.resultBuffer = []
 	this.queueSize = 0
+	this.searchResult = undefined
 
 	this.search = function(searchParameters) {
+		console.log(searchParameters)
+		// resetting some stuff
+		this.resultBuffer = []
+		this.searchResult = undefined
+
 		// remember searchParameters for future
 		this.searchParameters = searchParameters
 		let page = searchParameters.page || 0
@@ -22,7 +28,7 @@ var Europeana = function() {
 		u.append('rows', limit)
 
 		let finalAPIString = this.URLBase + '/query?' + u
-		console.log('searching...')
+		console.log('searching for', searchParameters.queryString)
 
 		return fetch(finalAPIString)
 		.then(rawResponse => rawResponse.json())
@@ -32,16 +38,18 @@ var Europeana = function() {
 		})
 	}
 
-	this.canGetObjects = () => (this.queueSize <= this.maxQueueSize) && this.searchResult !== undefined
+	this.canGetObjects = () => (this.queueSize <= this.maxQueueSize) && this.searchResult !== undefined && this.searchResult.success && this.searchResult.items !== undefined
 
 
 
 	// must return a Promise!
 	this.getObject = function() {
+		if(this.canGetObjects() === false) throw new Error('cannot get images')
+
 		console.log(this);
 		this.queueSize++
 		console.log(this.searchResult)
-		let totalResults = this.searchResult.totalResults
+		let totalResults = Math.min(this.searchResult.totalResults, 999)
 
 		// pick a random pageNumber between 0 and max_entries/45
 		// eg.  1000 items: 1000 / 45 = 22 pages
