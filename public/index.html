@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Europeana VR</title>
+	<script src="bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
+	<script src="node_modules/url-search-params/build/url-search-params.js"></script>
+	<link rel="import" href="bower_components/polymer/polymer.html">
+	<link rel="import" href="bower_components/paper-dialog/paper-dialog.html">
+	<link rel="import" href="bower_components/paper-toggle-button/paper-toggle-button.html">
+
+	<link rel="import" href="bower_components/neon-animation/animations/scale-up-animation.html">
+	<link rel="import" href="bower_components/neon-animation/animations/fade-out-animation.html">
+	<link rel="import" href="bower_components/paper-input/paper-input.html">
+	<link rel="import" href="bower_components/paper-button/paper-button.html">
+	<link rel="import" href="bower_components/voice-elements/dist/voice-player.html">
+	<link rel="import" href="bower_components/voice-elements/dist/voice-recognition.html">
+	<!-- <script src="node_modules/aframe/dist/aframe.js"></script> -->
+	<script src="aframe.js"></script>
+</head>
+
+<style media="screen">
+
+.settings {
+	display: flex;
+	flex-direction: column;
+}
+/*#scene canvas {
+max-width: 50%;
+max-height: 50%;
+}*/
+</style>
+
+<body is="dom-bind">
+	<template id="app" is="dom-bind">
+
+		<paper-dialog id="welcome" modal auto-fit-on-attach  entry-animation="scale-up-animation" exit-animation="fade-out-animation">
+			<h2>Welcome!</h2>
+			<p>
+				Please check if the following settings are ok with you :)
+			</p>
+			<paper-toggle-button checked="{{soundEnabled}}">music and spoken instructions</paper-toggle-button>
+			<paper-toggle-button checked="{{voiceRecognitionEnabled}}">search via voice recognition</paper-toggle-button>
+			<div class="buttons">
+				<paper-button dialog-confirm>confirm</paper-button>
+			</div>
+		</paper-dialog>
+
+
+		<paper-input label="search" type="search" focus value="{{query}}"></paper-input>
+		<paper-button raised on-click="search">search</paper-button>
+		</template>
+
+		<voice-recognition hidden="{{!voiceRecognitionEnabled}}" id="voiceRecognizer" on-result="voiceRecognized"></voice-recognition>
+
+		<voice-player hidden="{{!soundEnabled}}" id="voicePlayer" accent="en-GB" text="Hey there! Welcome to the Europeana - VR -	 explorer! Please say a topic you want to explore into your microphone! Or if you prefer not to speak just type your search into the text field. Have fun!"></voice-player>
+
+
+	<a-scene id="scene" canvas="canvas: #mycanvas">
+		<canvas id="mycanvas"></canvas>
+
+	<a-image id="test" src="test.jpg" look-at="#camera"> </a-image>
+	<a-entity position="0 2.2 4">
+		<a-entity camera id="camera" look-controls wasd-controls>
+
+			<a-entity position="0 0 -3"
+								geometry="primitive: ring; radiusOuter: 0.05;
+													radiusInner: 0.025;"
+								material="color: black; shader: flat"
+								cursor="maxDistance: 20"></a-entity>
+		</a-entity>
+	</a-entity>
+
+	<a-sky color="rgb(137, 205, 200)"></a-sky>
+</a-scene>
+
+
+
+
+
+
+
+
+<script src="europeana.js"></script>
+<script src="index.js"></script>
+</body>
+</html>

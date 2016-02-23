@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<script src="node_modules/aframe/dist/aframe.js"></script>
+	<meta charset="utf-8">
+	<title>testing look-at</title>
+
+</head>
+<body>
+
+	<a-scene id="scene" canvas="canvas: #mycanvas">
+		<canvas id="mycanvas"></canvas>
+
+		<a-image material="color:white" look-at="#camera"> </a-image>
+		<a-camera id="camera" position="0 0 5"> </a-camera>
+		<a-sky material="color: blue"> </a-sky>
+
+	</a-scene>
+
+	<script type="text/javascript">
+	var radius, scene
+
+	function init() {
+			radius = 30
+
+			//
+			// !!a-images created directly via update, look at the camera:
+			//
+			addTestElement('green')
+
+
+			//
+			// !!a-images created via an interval are not looking at camera:
+			//
+			setInterval(function () {
+				addTestElement('yellow')
+			}, 1000)
+
+	}
+
+	function addTestElement(color) {
+
+		console.log(document.getElementById('camera'))
+		console.log(document.querySelector('#camera'))
+
+		var testObject = document.createElement('a-image')
+		testObject.setAttribute('look-at', '#camera')
+		testObject.setAttribute('position', '5 0 0')
+		testObject.setAttribute('material', 'color:' + color)
+		scene.appendChild(testObject)
+	}
+
+	scene = document.getElementById('scene')
+	scene.addEventListener('loaded', init)
+
+
+	</script>
+</body>
+
+
+</html>
