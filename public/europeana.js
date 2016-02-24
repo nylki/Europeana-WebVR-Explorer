@@ -2,7 +2,7 @@
 
 var Europeana = function() {
 
-	this.URLBase = 'http://192.168.1.106:8000/api/europeana',
+	this.URLBase = 'http://localhost:8000/api/europeana',
 	this.maxPerPage = 100
 	this.maxQueueSize = 2
 	this.result = {}
@@ -21,14 +21,26 @@ var Europeana = function() {
 		let page = searchParameters.page || 0
 		let setResult = searchParameters.setResult || true
 		let limit = searchParameters.limit || this.maxPerPage
-		console.log(searchParameters)
 		let u = new URLSearchParams()
+
+		if(searchParameters.mediaType === 'sound') {
+			setResult = false // dont save sound results
+			u.append('qf', 'TYPE:SOUND')
+		} else if (searchParameters.mediaType === 'image') {
+			u.append('qf', 'TYPE:IMAGE')
+		}
+
+		if(setResult) {
+			// reset previous result
+			this.resultBuffer = []
+			this.searchResult = undefined
+		}
+
 		if(page) u.append('start', page * this.maxPerPage)
 		if(searchParameters.queryString) u.append('query', searchParameters.queryString)
 		u.append('rows', limit)
 
 		let finalAPIString = this.URLBase + '/query?' + u
-		console.log('searching for', searchParameters.queryString)
 
 		return fetch(finalAPIString)
 		.then(rawResponse => rawResponse.json())
@@ -38,7 +50,7 @@ var Europeana = function() {
 		})
 	}
 
-	this.canGetObjects = () => (this.queueSize <= this.maxQueueSize) && this.searchResult !== undefined && this.searchResult.success && this.searchResult.items !== undefined
+	this.canGetObjects = () => (this.queueSize <= this.maxQueueSize) && this.searchResult !== undefined && this.searchResult.success && this.searchResult.items !== undefined && this.searchResult.totalResults > 0
 
 
 

@@ -108,14 +108,19 @@ app.search = function() {
 		img.removeAttribute('material')
 	}
 
-	return europeana.search({queryString: app.query}).then((response) => {
+	return europeana.search({queryString: app.query, mediaType: 'image', limit:1})
+	.then((response) => {
 		console.log(response)
+
 		if(europeana.canGetObjects() === false) {
 			app.emitUserNotification('Sorry, couldn\'t find enough images for' + app.query + '. Try something else!')
 		} else {
 			console.log(response)
 			app.emitUserNotification('Getting images for ' + app.query)
+			// now do the limitless full search
+			return europeana.search({queryString: app.query, mediaType: 'image'})
 		}
+
 		app.resetQuery()
 
 	})
