@@ -22,21 +22,25 @@ function _createImagePlanes() {
 		imagePlane.setAttribute('look-at', '#camera')
 		imagePlane.setAttribute('side', 'front')
 		imagePlane.setAttribute('position', `${x} ${y} ${z}`)
-//        <a-event name="mouseenter" scale="1.5 1.5 1.5"></a-event>
-        // <a-event name="mouseleave" scale="1 1 1"></a-event>
-		let mouseenterevent = document.createElement('a-event')
-		let mouseleaveevent = document.createElement('a-event')
-		let scaleAnimation = document.createElement('a-animation')
-		scaleAnimation.setAttribute('attribute', 'scale')
-		scaleAnimation.setAttribute('to', '2 2 2')
-		scaleAnimation.setAttribute('dur', '3000')
-		scaleAnimation.setAttribute('begin', 'mouseenter')
-		// mouseenterevent.setAttribute('scale', '2 2 2')
-		// mouseenterevent.setAttribute('name', 'mouseenter')
-		// mouseleaveevent.setAttribute('scale', '1 1 1')
-		// mouseleaveevent.setAttribute('name', 'mouseleave')
-		// imagePlane.appendChild(mouseenterevent)
-		imagePlane.appendChild(scaleAnimation)
+
+		let mouseleaveevent = document.createElement('a-animation')
+		let mouseenterevent = document.createElement('a-animation')
+
+		mouseenterevent.setAttribute('attribute', 'scale')
+		mouseenterevent.setAttribute('to', '3 3 3')
+		mouseenterevent.setAttribute('dur', '1500')
+		mouseenterevent.setAttribute('fill', 'both')
+		mouseenterevent.setAttribute('begin', 'mouseenter')
+
+		mouseleaveevent.setAttribute('attribute', 'scale')
+		mouseleaveevent.setAttribute('to', '1 1 1')
+		mouseleaveevent.setAttribute('dur', '500')
+		mouseleaveevent.setAttribute('fill', 'both')
+		mouseleaveevent.setAttribute('begin', 'mouseleave')
+
+		imagePlane.appendChild(mouseenterevent)
+		imagePlane.appendChild(mouseleaveevent)
+
 		planes.push(imagePlane)
 		scene.appendChild(imagePlane)
 
@@ -96,6 +100,8 @@ function update() {
 		console.log(imagePlanes[imagesAdded])
 		imagePlanes[imagesAdded].setAttribute('visible', true)
 		imagePlanes[imagesAdded].setAttribute('material', 'src:url(' + object.src + ')')
+		imagePlanes[imagesAdded].dataset.details = object.details
+		console.log(imagePlanes[imagesAdded].dataset.details)
 		// imagePlanes[imagesAdded].emit('fade')
 		// imagePlanes[imagesAdded].setAttribute('src', 'test.jpg')
 		imagesAdded = (imagesAdded + 1) % 50
