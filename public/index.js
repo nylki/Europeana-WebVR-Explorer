@@ -41,8 +41,7 @@ function _createImagePlanes() {
 		mouseenterevent.setAttribute('from', '1 1 1')
 		mouseenterevent.setAttribute('to', '3 3 3')
 		mouseenterevent.setAttribute('dur', '3000')
-		mouseenterevent.setAttribute('fill', 'forwards')
-		mouseenterevent.setAttribute('begin', 'mouseenter')
+		mouseenterevent.setAttribute('begin', 'click')
 		mouseenterevent.addEventListener('animationend', setActiveElement)
 
 		mouseleaveevent.setAttribute('attribute', 'scale')
