@@ -5,11 +5,22 @@ var waitingImages = []
 var imagePlanes
 var imagesAdded = 0
 var radius = 10
+var activeElement
 var imageEuropeana = new Europeana()
 var soundEuropeana = new Europeana()
 // var URL = URL || webkitURL
 app = document.getElementById('app')
 scene = document.getElementById('scene')
+
+function setActiveElement(e) {
+	console.log('active element');
+	activeElement = e.target.parentElement
+	setTimeout(() => {
+		app.emitUserNotification(activeElement.dataset.title)
+	}, 500);
+
+
+}
 
 function _createImagePlanes() {
 	let planes = []
@@ -27,16 +38,18 @@ function _createImagePlanes() {
 		let mouseenterevent = document.createElement('a-animation')
 
 		mouseenterevent.setAttribute('attribute', 'scale')
+		mouseenterevent.setAttribute('from', '1 1 1')
 		mouseenterevent.setAttribute('to', '3 3 3')
-		mouseenterevent.setAttribute('dur', '1500')
-		mouseenterevent.setAttribute('fill', 'both')
+		mouseenterevent.setAttribute('dur', '3000')
+		mouseenterevent.setAttribute('fill', 'forwards')
 		mouseenterevent.setAttribute('begin', 'mouseenter')
+		mouseenterevent.addEventListener('animationend', setActiveElement)
 
 		mouseleaveevent.setAttribute('attribute', 'scale')
 		mouseleaveevent.setAttribute('to', '1 1 1')
 		mouseleaveevent.setAttribute('dur', '500')
-		mouseleaveevent.setAttribute('fill', 'both')
 		mouseleaveevent.setAttribute('begin', 'mouseleave')
+
 
 		imagePlane.appendChild(mouseenterevent)
 		imagePlane.appendChild(mouseleaveevent)
@@ -65,12 +78,12 @@ function init() {
 
 		if(app.soundEnabled) {
 			console.log(app.$.voicePlayer)
-			app.$.voicePlayer.addEventListener('start', function(e) {
+			app.$.voicePlayer.addEventListener('start', function() {
 				app.$.voiceRecognizer.stop()
 				console.log('stopped voice recognizer')
 			})
 
-			app.$.voicePlayer.addEventListener('end', function(e) {
+			app.$.voicePlayer.addEventListener('end', function() {
 				app.$.voiceRecognizer.start()
 				console.log('started voice recognizer again')
 			})
@@ -82,7 +95,7 @@ function init() {
 			app.$.voiceRecognizer.start()
 		}
 
-		setInterval(update, 3000)
+		setInterval(update, 2000)
 	})
 
 	scene.addEventListener('loaded', function (e) {
@@ -95,13 +108,13 @@ function update() {
 	if(imageEuropeana.canGetObjects() === false) return
 
 	imageEuropeana.getObject().then((object) => {
-		console.log(imagesAdded);
-		console.log(object.src);
-		console.log(imagePlanes[imagesAdded])
+		// console.log(imagesAdded);
+		// console.log(object.src);
+		// console.log(imagePlanes[imagesAdded])
 		imagePlanes[imagesAdded].setAttribute('visible', true)
 		imagePlanes[imagesAdded].setAttribute('material', 'src:url(' + object.src + ')')
-		imagePlanes[imagesAdded].dataset.details = object.details
-		console.log(imagePlanes[imagesAdded].dataset.details)
+		imagePlanes[imagesAdded].dataset.title = object.details.title[0]
+		// console.log(imagePlanes[imagesAdded].dataset.details)
 		// imagePlanes[imagesAdded].emit('fade')
 		// imagePlanes[imagesAdded].setAttribute('src', 'test.jpg')
 		imagesAdded = (imagesAdded + 1) % 50
@@ -173,6 +186,7 @@ app.resetQuery = function () {
 
 app.emitUserNotification = function (msg) {
 	if(app.soundEnabled) {
+		// app.$.voicePlayer.cancel()
 		app.$.voicePlayer.text = msg
 		app.$.voicePlayer.speak()
 	}

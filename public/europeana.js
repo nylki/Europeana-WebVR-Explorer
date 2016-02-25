@@ -58,9 +58,8 @@ var Europeana = function() {
 	this.getObject = function() {
 		if(this.canGetObjects() === false) throw new Error('cannot get media objects')
 
-		console.log(this);
 		this.queueSize++
-		console.log(this.searchResult)
+		// console.log(this.searchResult)
 		let totalResults = Math.min(this.searchResult.totalResults, 999)
 
 		// pick a random pageNumber between 0 and max_entries/45

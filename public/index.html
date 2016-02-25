@@ -52,13 +52,13 @@
 		<voice-recognition hidden="{{!voiceRecognitionEnabled}}" id="voiceRecognizer" on-result="voiceRecognized"></voice-recognition>
 
 		<!-- Hey there! Welcome to the Europeana - VR -	 explorer! Please say a topic you want to explore into your microphone! Or if you prefer not to speak just type your search into the text field. -->
-		<voice-player hidden="{{!soundEnabled}}" id="voicePlayer" accent="en-GB" text=" Have fun!"></voice-player>
+		<voice-player hidden="{{!soundEnabled}}" id="voicePlayer" accent="en-GB" text="Have fun!"></voice-player>
 		</template>
 
 	<a-scene id="scene" canvas="canvas: #mycanvas">
 		<canvas id="mycanvas"></canvas>
 
-		<a-entity id="camera" position="0 1.8 4">
+		<a-entity id="camera" position="0 0 0">
 			<a-camera id="camera">
 				<a-cursor color="#4CC3D9"></a-cursor>
 			</a-camera>
