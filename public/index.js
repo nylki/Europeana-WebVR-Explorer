@@ -1,11 +1,12 @@
 'use strict'
 
-var app, scene, voiceRec, welcomeDialog
+var app, scene, voiceRec, welcomeDialog, cam
 var waitingImages = []
 var imagePlanes
 var imagesAdded = 0
 var radius = 10
-var europeana = new Europeana()
+var imageEuropeana = new Europeana()
+var soundEuropeana = new Europeana()
 // var URL = URL || webkitURL
 app = document.getElementById('app')
 scene = document.getElementById('scene')
@@ -21,11 +22,26 @@ function _createImagePlanes() {
 		imagePlane.setAttribute('look-at', '#camera')
 		imagePlane.setAttribute('side', 'front')
 		imagePlane.setAttribute('position', `${x} ${y} ${z}`)
-
+//        <a-event name="mouseenter" scale="1.5 1.5 1.5"></a-event>
+        // <a-event name="mouseleave" scale="1 1 1"></a-event>
+		let mouseenterevent = document.createElement('a-event')
+		let mouseleaveevent = document.createElement('a-event')
+		let scaleAnimation = document.createElement('a-animation')
+		scaleAnimation.setAttribute('attribute', 'scale')
+		scaleAnimation.setAttribute('to', '2 2 2')
+		scaleAnimation.setAttribute('dur', '3000')
+		scaleAnimation.setAttribute('begin', 'mouseenter')
+		// mouseenterevent.setAttribute('scale', '2 2 2')
+		// mouseenterevent.setAttribute('name', 'mouseenter')
+		// mouseleaveevent.setAttribute('scale', '1 1 1')
+		// mouseleaveevent.setAttribute('name', 'mouseleave')
+		// imagePlane.appendChild(mouseenterevent)
+		imagePlane.appendChild(scaleAnimation)
 		planes.push(imagePlane)
 		scene.appendChild(imagePlane)
 
 	}
+
 	return planes
 }
 
@@ -63,9 +79,6 @@ function init() {
 		}
 
 		setInterval(update, 3000)
-
-
-
 	})
 
 	scene.addEventListener('loaded', function (e) {
@@ -75,21 +88,18 @@ function init() {
 }
 
 function update() {
-	if(europeana.canGetObjects() === false) return
+	if(imageEuropeana.canGetObjects() === false) return
 
-		europeana.getObject().then((object) => {
-			console.log(imagesAdded);
-			console.log(object.imageSrc);
-			console.log(imagePlanes[imagesAdded])
-			imagePlanes[imagesAdded].setAttribute('visible', true)
-			imagePlanes[imagesAdded].setAttribute('material', 'src:url(' + object.imageSrc + ')')
-			// imagePlanes[imagesAdded].emit('fade')
-
-			// imagePlanes[imagesAdded].setAttribute('src', 'test.jpg')
-			imagesAdded = (imagesAdded + 1) % 50
-		})
-
-
+	imageEuropeana.getObject().then((object) => {
+		console.log(imagesAdded);
+		console.log(object.src);
+		console.log(imagePlanes[imagesAdded])
+		imagePlanes[imagesAdded].setAttribute('visible', true)
+		imagePlanes[imagesAdded].setAttribute('material', 'src:url(' + object.src + ')')
+		// imagePlanes[imagesAdded].emit('fade')
+		// imagePlanes[imagesAdded].setAttribute('src', 'test.jpg')
+		imagesAdded = (imagesAdded + 1) % 50
+	})
 }
 
 app.voiceRecognized = function (e) {
@@ -108,21 +118,41 @@ app.search = function() {
 		img.removeAttribute('material')
 	}
 
-	return europeana.search({queryString: app.query, mediaType: 'image', limit:1})
+	return imageEuropeana.search({queryString: app.query, mediaType: 'image', limit:1})
 	.then((response) => {
 		console.log(response)
 
-		if(europeana.canGetObjects() === false) {
+		if(imageEuropeana.canGetObjects() === false) {
+
 			app.emitUserNotification('Sorry, couldn\'t find enough images for' + app.query + '. Try something else!')
+
 		} else {
-			console.log(response)
+
 			app.emitUserNotification('Getting images for ' + app.query)
+
+			// search for sound
+			soundEuropeana.search({queryString: app.query, mediaType: 'sound', limit:1})
+			.then(() => {
+				app.loadNewSound()
+				app.$.soundPlayer.addEventListener('ended', (e) => {
+					console.log('sound player has ended')
+					app.loadNewSound()
+				})
+			})
+
 			// now do the limitless full search
-			return europeana.search({queryString: app.query, mediaType: 'image'})
+			return imageEuropeana.search({queryString: app.query, mediaType: 'image'})
 		}
+	}).then(app.resetQuery)
 
-		app.resetQuery()
+}
 
+app.loadNewSound = function () {
+	if(soundEuropeana.canGetObjects() === false)
+		return
+	return soundEuropeana.getObject().then(soundObject => {
+		app.$.soundPlayer.src = soundObject.src
+		app.$.soundPlayer.play()
 	})
 }
 
@@ -130,6 +160,7 @@ app.resetQuery = function () {
 	console.log('resetting')
 	app.query = ''
 	app.$.voiceRecognizer.text = ''
+	app.$.soundPlayer.pause()
 	// if(app.voiceRecognitionEnabled) app.$.voiceRecognizer.start()
 	console.log(app.query + ' ----- ' + app.$.voiceRecognizer.text)
 }
@@ -145,7 +176,7 @@ app.emitUserNotification = function (msg) {
 app.addEventListener('dom-change', init)
 
 scene.addEventListener('loaded', function (e) {
-
+	cam = document.getElementById('camera')
 	// for (var i = 0; i < 25; i++) {
 	// 	addTestElement()
 	// }

@@ -47,6 +47,7 @@
 		<paper-input label="search" type="search" focus value="{{query}}"></paper-input>
 		<paper-button raised on-click="search">search</paper-button>
 
+		<audio id="soundPlayer" autoplay></audio>
 
 		<voice-recognition hidden="{{!voiceRecognitionEnabled}}" id="voiceRecognizer" on-result="voiceRecognized"></voice-recognition>
 
@@ -57,12 +58,11 @@
 	<a-scene id="scene" canvas="canvas: #mycanvas">
 		<canvas id="mycanvas"></canvas>
 
-	<a-entity position="0 2.2 4">
-		<a-entity camera id="camera" look-controls wasd-controls>
-
-			<a-entity position="0 0 -3" cursor="maxDistance: 20"></a-entity>
+		<a-entity id="camera" position="0 1.8 4">
+			<a-camera id="camera">
+				<a-cursor color="#4CC3D9"></a-cursor>
+			</a-camera>
 		</a-entity>
-	</a-entity>
 
 	<a-sky color="rgb(137, 205, 200)"></a-sky>
 </a-scene>

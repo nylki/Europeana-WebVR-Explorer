@@ -12,6 +12,7 @@ var Europeana = function() {
 
 	this.search = function(searchParameters) {
 		console.log(searchParameters)
+
 		// resetting some stuff
 		this.resultBuffer = []
 		this.searchResult = undefined
@@ -24,7 +25,6 @@ var Europeana = function() {
 		let u = new URLSearchParams()
 
 		if(searchParameters.mediaType === 'sound') {
-			setResult = false // dont save sound results
 			u.append('qf', 'TYPE:SOUND')
 		} else if (searchParameters.mediaType === 'image') {
 			u.append('qf', 'TYPE:IMAGE')
@@ -56,7 +56,7 @@ var Europeana = function() {
 
 	// must return a Promise!
 	this.getObject = function() {
-		if(this.canGetObjects() === false) throw new Error('cannot get images')
+		if(this.canGetObjects() === false) throw new Error('cannot get media objects')
 
 		console.log(this);
 		this.queueSize++
@@ -117,7 +117,7 @@ var Europeana = function() {
 			choosenObject.details = details
 			let imageURL = choosenObject.details.aggregations[0].edmIsShownBy
 			// construct image src from proxy url + original image url
-			choosenObject.imageSrc = (this.URLBase + '/images?') + imageURL
+			choosenObject.src = (this.URLBase + '/images?') + imageURL
 			this.queueSize--
 			return choosenObject
 		})
