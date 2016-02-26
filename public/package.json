@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "aframe": "github:mozvr/aframe#dev",
+    "aframe-layout": "^1.0.2",
     "url-search-params": "^0.3.0"
   }
 }

@@ -1,16 +1,17 @@
 'use strict'
 
-var app, scene, voiceRec, welcomeDialog, cam
+var app, scene, layout, voiceRec, welcomeDialog, cam
 var waitingImages = []
 var imagePlanes
 var imagesAdded = 0
-var radius = 10
+var radius = 6
 var activeElement
 var imageEuropeana = new Europeana()
 var soundEuropeana = new Europeana()
 // var URL = URL || webkitURL
 app = document.getElementById('app')
 scene = document.getElementById('scene')
+layout = document.getElementById('layout')
 
 function setActiveElement(e) {
 	console.log('active element');
@@ -21,41 +22,64 @@ function setActiveElement(e) {
 
 
 }
+function radians(deg) {
+	return deg * (Math.PI / 180)
+}
 
 function _createImagePlanes() {
 	let planes = []
-	for (var i = 0; i < 51; i++) {
+	for (var s = 0; s < 360; s += 72) {
+	for (var t = 0; t < 360; t += 72) {
+		let s_rad = radians(s)
+		let t_rad = radians(t)
+		// yields 50 a-images, steps are 72 degrees spherical distance
 		let imagePlane = document.createElement('a-image')
 		imagePlane.setAttribute('visible', 'false')
-		let x = (Math.random() * radius) - (radius/2)
-		let y = (Math.random() * (radius/2)) - (radius/4)
-		let z = (Math.random() * radius) - (radius/2)
+		let x = radius * Math.cos(s_rad) * Math.sin(t_rad)
+		let y = radius * Math.sin(s_rad) * Math.sin(t_rad)
+		let z = radius * Math.cos(t_rad)
+
 		imagePlane.setAttribute('look-at', '#camera')
 		imagePlane.setAttribute('side', 'front')
+		imagePlane.setAttribute('opacity', '0.0')
 		imagePlane.setAttribute('position', `${x} ${y} ${z}`)
+
 
 		let mouseleaveevent = document.createElement('a-animation')
 		let mouseenterevent = document.createElement('a-animation')
+		let loaded = document.createElement('a-animation')
+
+		loaded.setAttribute('attribute', 'opacity')
+		loaded.setAttribute('to', '1.0')
+		loaded.setAttribute('dur', '3000')
+		loaded.setAttribute('begin', 'material-texture-loaded')
 
 		mouseenterevent.setAttribute('attribute', 'scale')
 		mouseenterevent.setAttribute('from', '1 1 1')
-		mouseenterevent.setAttribute('to', '3 3 3')
+		mouseenterevent.setAttribute('to', '4.5 4.5 4.5')
 		mouseenterevent.setAttribute('dur', '3000')
 		mouseenterevent.setAttribute('begin', 'click')
+		mouseleaveevent.setAttribute('fill', 'forward')
 		mouseenterevent.addEventListener('animationend', setActiveElement)
 
 		mouseleaveevent.setAttribute('attribute', 'scale')
 		mouseleaveevent.setAttribute('to', '1 1 1')
-		mouseleaveevent.setAttribute('dur', '500')
+		mouseleaveevent.setAttribute('dur', '2000')
+		mouseleaveevent.setAttribute('fill', 'forwards')
 		mouseleaveevent.setAttribute('begin', 'mouseleave')
 
 
 		imagePlane.appendChild(mouseenterevent)
 		imagePlane.appendChild(mouseleaveevent)
+		imagePlane.appendChild(loaded)
 
 		planes.push(imagePlane)
 		scene.appendChild(imagePlane)
 
+		imagePlane.addEventListener('material-texture-loaded', function (e) {
+			console.log('IMAGES LOADED!!!!!!!!!!!!!!');
+		});
+	}
 	}
 
 	return planes
@@ -103,6 +127,7 @@ function init() {
 	})
 }
 
+
 function update() {
 	if(imageEuropeana.canGetObjects() === false) return
 
@@ -114,8 +139,6 @@ function update() {
 		imagePlanes[imagesAdded].setAttribute('material', 'src:url(' + object.src + ')')
 		imagePlanes[imagesAdded].dataset.title = object.details.title[0]
 		// console.log(imagePlanes[imagesAdded].dataset.details)
-		// imagePlanes[imagesAdded].emit('fade')
-		// imagePlanes[imagesAdded].setAttribute('src', 'test.jpg')
 		imagesAdded = (imagesAdded + 1) % 50
 	})
 }
