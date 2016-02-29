@@ -26,7 +26,7 @@ function setActiveElement(e) {
 
 function _createImagePlanes() {
 
-	var radians = (deg) => deg * (Math.PI / 140)
+	var radians = (deg) => deg * (Math.PI / 180)
 
 	let planes = []
 	for (var s = 0; s < 359; s += 100) {
@@ -36,20 +36,18 @@ function _createImagePlanes() {
 		// yields 50 a-images, steps are 72 degrees spherical distance
 		let imagePlane = document.createElement('a-image')
 		imagePlane.setAttribute('visible', 'false')
+
 		let x = radius * Math.cos(s_rad) * Math.sin(t_rad)
 		let y = radius * Math.sin(s_rad) * Math.sin(t_rad)
 		let z = radius * Math.cos(t_rad)
-
 		let x_close = x / 3
 		let y_close = y / 3
 		let z_close = z / 3
-
 
 		imagePlane.setAttribute('look-at', '#camera')
 		imagePlane.setAttribute('side', 'front')
 		imagePlane.setAttribute('opacity', '0.0')
 		imagePlane.setAttribute('position', `${x} ${y} ${z}`)
-
 
 		let mouseleaveevent = document.createElement('a-animation')
 		let mouseenterevent = document.createElement('a-animation')
@@ -169,6 +167,19 @@ function update() {
 	})
 }
 
+function clickedCanvas() {
+	// console.log(app.$.voiceRecognizer);
+	// console.log('bla');
+	// app.emitUserNotification('i am listening.')
+	// app.$.voiceRecognizer.start()
+}
+
+app.searchKeyUp = function (e) {
+	if(e.keyIdentifier === 'Enter') {
+		app.search()
+	}
+}
+
 app.voiceRecognized = function (e) {
 	app.query = e.detail.result
 	app.search()
@@ -194,7 +205,7 @@ app.search = function() {
 			app.emitUserNotification('Sorry, couldn\'t find enough images for' + app.query + '. Try something else!')
 
 		} else {
-
+			app.$.voiceRecognizer.stop()
 			app.emitUserNotification('Getting images for ' + app.query)
 
 			// search for sound

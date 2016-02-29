@@ -45,14 +45,11 @@
 			</div>
 		</paper-dialog>
 
+		<paper-input label="search" type="search" focus value="{{query}}" on-keyup="searchKeyUp"></paper-input>
 
-		<paper-input label="search" type="search" focus value="{{query}}"></paper-input>
-		<paper-button raised on-click="search">search</paper-button>
+		<audio id="soundPlayer" autoplay volume="0.75"></audio>
 
-
-		<audio id="soundPlayer" autoplay></audio>
-
-		<voice-recognition hidden="{{!voiceRecognitionEnabled}}" id="voiceRecognizer" on-result="voiceRecognized"></voice-recognition>
+		<voice-recognition continuous="false" hidden="{{!voiceRecognitionEnabled}}" id="voiceRecognizer" on-result="voiceRecognized"></voice-recognition>
 
 		<!-- Hey there! Welcome to the Europeana - VR -	 explorer! Please say a topic you want to explore into your microphone! Or if you prefer not to speak just type your search into the text field. -->
 		<voice-player hidden="{{!soundEnabled}}" id="voicePlayer" accent="en-GB" text="Have fun!"></voice-player>
@@ -60,7 +57,7 @@
 
 
 	<a-scene id="scene" canvas="canvas: #mycanvas">
-		<canvas id="mycanvas"></canvas>
+		<canvas id="mycanvas" onclick="clickedCanvas()"></canvas>
 
 		<a-entity id="player" position="0 0 0">
 			<a-camera id="camera">

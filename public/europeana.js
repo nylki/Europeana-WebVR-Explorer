@@ -4,7 +4,7 @@
 
 var Europeana = function() {
 
-	this.URLBase = 'http://localhost:8000/api/europeana',
+	this.URLBase = 'http://192.168.1.106:8000/api/europeana',
 	this.maxPerPage = 100
 	this.maxQueueSize = 2
 	this.result = {}
