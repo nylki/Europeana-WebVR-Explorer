@@ -4,7 +4,7 @@ var app, scene, layout, voiceRec, welcomeDialog, cam
 var waitingImages = []
 var imagePlanes
 var imagesAdded = 0
-var radius = 6
+var radius = 4
 var activeElement
 var imageEuropeana = new Europeana()
 var soundEuropeana = new Europeana()
@@ -22,14 +22,15 @@ function setActiveElement(e) {
 
 
 }
-function radians(deg) {
-	return deg * (Math.PI / 180)
-}
+
 
 function _createImagePlanes() {
+
+	var radians = (deg) => deg * (Math.PI / 140)
+
 	let planes = []
-	for (var s = 0; s < 360; s += 72) {
-	for (var t = 0; t < 360; t += 72) {
+	for (var s = 0; s < 359; s += 100) {
+	for (var t = 0; t < 359; t += 100) {
 		let s_rad = radians(s)
 		let t_rad = radians(t)
 		// yields 50 a-images, steps are 72 degrees spherical distance
@@ -38,6 +39,11 @@ function _createImagePlanes() {
 		let x = radius * Math.cos(s_rad) * Math.sin(t_rad)
 		let y = radius * Math.sin(s_rad) * Math.sin(t_rad)
 		let z = radius * Math.cos(t_rad)
+
+		let x_close = x / 3
+		let y_close = y / 3
+		let z_close = z / 3
+
 
 		imagePlane.setAttribute('look-at', '#camera')
 		imagePlane.setAttribute('side', 'front')
@@ -54,19 +60,33 @@ function _createImagePlanes() {
 		loaded.setAttribute('dur', '3000')
 		loaded.setAttribute('begin', 'material-texture-loaded')
 
-		mouseenterevent.setAttribute('attribute', 'scale')
-		mouseenterevent.setAttribute('from', '1 1 1')
-		mouseenterevent.setAttribute('to', '4.5 4.5 4.5')
-		mouseenterevent.setAttribute('dur', '3000')
+		mouseenterevent.setAttribute('attribute', 'position')
+		mouseenterevent.setAttribute('from', `${x} ${y} ${z}`)
+		mouseenterevent.setAttribute('to', `${x_close} ${y_close} ${z_close}`)
+		mouseenterevent.setAttribute('dur', '1000')
 		mouseenterevent.setAttribute('begin', 'click')
 		mouseleaveevent.setAttribute('fill', 'forward')
 		mouseenterevent.addEventListener('animationend', setActiveElement)
 
-		mouseleaveevent.setAttribute('attribute', 'scale')
-		mouseleaveevent.setAttribute('to', '1 1 1')
-		mouseleaveevent.setAttribute('dur', '2000')
+		mouseleaveevent.setAttribute('attribute', 'position')
+		mouseleaveevent.setAttribute('to', `${x} ${y} ${z}`)
+		mouseleaveevent.setAttribute('dur', '500')
 		mouseleaveevent.setAttribute('fill', 'forwards')
 		mouseleaveevent.setAttribute('begin', 'mouseleave')
+
+		// mouseenterevent.setAttribute('attribute', 'scale')
+		// mouseenterevent.setAttribute('from', '1 1 1')
+		// mouseenterevent.setAttribute('to', '4.5 4.5 4.5')
+		// mouseenterevent.setAttribute('dur', '1000')
+		// mouseenterevent.setAttribute('begin', 'click')
+		// mouseleaveevent.setAttribute('fill', 'forward')
+		// mouseenterevent.addEventListener('animationend', setActiveElement)
+		//
+		// mouseleaveevent.setAttribute('attribute', 'scale')
+		// mouseleaveevent.setAttribute('to', '1 1 1')
+		// mouseleaveevent.setAttribute('dur', '500')
+		// mouseleaveevent.setAttribute('fill', 'forwards')
+		// mouseleaveevent.setAttribute('begin', 'mouseleave')
 
 
 		imagePlane.appendChild(mouseenterevent)
@@ -79,6 +99,12 @@ function _createImagePlanes() {
 		imagePlane.addEventListener('material-texture-loaded', function (e) {
 			console.log('IMAGES LOADED!!!!!!!!!!!!!!');
 		});
+
+		imagePlane.addEventListener('click', function (e) {
+
+
+		});
+
 	}
 	}
 
