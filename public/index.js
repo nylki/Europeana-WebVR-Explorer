@@ -29,8 +29,8 @@ function _createImagePlanes() {
 	var radians = (deg) => deg * (Math.PI / 180)
 
 	let planes = []
-	for (var s = 0; s < 359; s += 100) {
-	for (var t = 0; t < 359; t += 100) {
+	for (var s = 0; s < 359; s += 110) {
+	for (var t = 0; t < 359; t += 110) {
 		let s_rad = radians(s)
 		let t_rad = radians(t)
 		// yields 50 a-images, steps are 72 degrees spherical distance
@@ -126,7 +126,7 @@ function init() {
 		if(app.soundEnabled) {
 			console.log(app.$.voicePlayer)
 			app.$.voicePlayer.addEventListener('start', function() {
-				app.$.voiceRecognizer.stop()
+				app.$.voiceRecognizer.abort()
 				console.log('stopped voice recognizer')
 			})
 
@@ -205,7 +205,7 @@ app.search = function() {
 			app.emitUserNotification('Sorry, couldn\'t find enough images for' + app.query + '. Try something else!')
 
 		} else {
-			app.$.voiceRecognizer.stop()
+			app.$.voiceRecognizer.abort()
 			app.emitUserNotification('Getting images for ' + app.query)
 
 			// search for sound
