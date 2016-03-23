@@ -2,12 +2,16 @@
 
 var app, scene, layout, voiceRec, welcomeDialog, cam
 var waitingImages = []
-var imagePlanes
+var imagePlanes = []
 var imagesAdded = 0
 var radius = 4
 var activeElement
 var imageEuropeana = new Europeana()
 var soundEuropeana = new Europeana()
+var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition
+var SpeechGrammarList = SpeechGrammarList || webkitSpeechGrammarList
+var SpeechRecognitionEvent = SpeechRecognitionEvent || webkitSpeechRecognitionEvent
+
 // var URL = URL || webkitURL
 app = document.getElementById('app')
 scene = document.getElementById('scene')
@@ -21,6 +25,11 @@ function setActiveElement(e) {
 	}, 500);
 
 
+}
+
+function createImagePlane(object) {
+
+	// return imagePlane
 }
 
 
@@ -116,7 +125,7 @@ function init() {
 	app.soundEnabled = true
 
 	// HACK: once injected elements can have a look-at again, remove this
-	imagePlanes = _createImagePlanes()
+	// imagePlanes = _createImagePlanes()
 
 	welcomeDialog.addEventListener('iron-overlay-closed', function (e) {
 		console.log('dialog closed')
@@ -156,13 +165,40 @@ function update() {
 	if(imageEuropeana.canGetObjects() === false) return
 
 	imageEuropeana.getObject().then((object) => {
+		console.log(object)
 		// console.log(imagesAdded);
 		// console.log(object.src);
 		// console.log(imagePlanes[imagesAdded])
-		imagePlanes[imagesAdded].setAttribute('visible', true)
-		imagePlanes[imagesAdded].setAttribute('material', 'src:url(' + object.src + ')')
-		imagePlanes[imagesAdded].dataset.title = object.details.title[0]
+		// imagePlanes[imagesAdded].setAttribute('visible', true)
+		// imagePlanes[imagesAdded].setAttribute('material', 'src:url(' + object.src + ')')
+		// imagePlanes[imagesAdded].dataset.title = object.details.title[0]
 		// console.log(imagePlanes[imagesAdded].dataset.details)
+
+		let imagePlane = document.createElement('a-image')
+
+		let x = Math.random() * 10
+		let y = Math.random() * 10
+		let z = Math.random() * 10
+
+		imagePlane.setAttribute('look-at', '#camera')
+		// imagePlane.setAttribute('side', 'front')
+		// imagePlane.setAttribute('opacity', '0.2')
+		imagePlane.setAttribute('position', `${x} ${y} ${z}`)
+
+		imagePlane.setAttribute('material', 'src:url(' + object.src + ')')
+		imagePlane.dataset.title = object.details.title[0]
+
+		let loaded = document.createElement('a-animation')
+		loaded.setAttribute('attribute', 'opacity')
+		loaded.setAttribute('to', '1.0')
+		loaded.setAttribute('dur', '3000')
+		loaded.setAttribute('begin', 'material-texture-loaded')
+
+		imagePlane.appendChild(loaded)
+		scene.appendChild(imagePlane)
+
+		imagePlanes.push(imagePlane)
+		// scene.appendChild(plane)
 		imagesAdded = (imagesAdded + 1) % 50
 	})
 }

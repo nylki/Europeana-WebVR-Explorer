@@ -4,7 +4,7 @@
 
 var Europeana = function() {
 
-	this.URLBase = 'http://192.168.1.106:6111/api/europeana',
+	this.URLBase = 'http://localhost:6111/api/europeana',
 	this.maxPerPage = 100
 	this.maxQueueSize = 2
 	this.result = {}
@@ -31,6 +31,11 @@ var Europeana = function() {
 		} else if (searchParameters.mediaType === 'image') {
 			u.append('qf', 'TYPE:IMAGE')
 		}
+
+		// this kind of stuff should be added or parsed on the server
+		u.append('qf', 'what:painting OR sculpture OR map OR drawing')
+
+
 
 		if(setResult) {
 			// reset previous result

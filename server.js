@@ -3,15 +3,25 @@
 var request = require('request');
 var express = require('express');
 var app = express();
-app.listen(6111);
+app.listen(process.env.PORT || 5000);
 app.use(express.static('public'));
 app.use(express.static('node_modules'));
 
 var fetch = require('node-fetch');
 var  apikey = '8dEyJAhFi'
 
+
+// on /parse/<query>
+// eg. query="green landscape paintings"
+// should yield something like:
+// q=landscape&qf=what:painting&colourpalette
+var handleQueryParsing = function (req, res, next) {
+	console.log(req._parsedUrl.query)
+
+}
+
 var handleEuropeanaQuery = function(req, res, next) {
-	let url = 'http://www.europeana.eu/api/v2/search.json?wskey='+ apikey + '&reusability=restricted&media=true&profile=minimal&' + req._parsedUrl.query
+	let url = 'http://www.europeana.eu/api/v2/search.json?wskey='+ apikey + '&reusability=open&media=true&profile=minimal&' + req._parsedUrl.query
 	// console.log(url)
 	// request(url).pipe(res)
 	console.log(url)

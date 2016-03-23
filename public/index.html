@@ -15,8 +15,8 @@
 	<link rel="import" href="bower_components/paper-button/paper-button.html">
 	<link rel="import" href="bower_components/voice-elements/dist/voice-player.html">
 	<link rel="import" href="bower_components/voice-elements/dist/voice-recognition.html">
-	<!-- <script src="node_modules/aframe/dist/aframe.js"></script> -->
-	<script src="aframe.js"></script>
+	<script src="node_modules/aframe/dist/aframe.js"></script>
+
 
 
 </head>
@@ -58,11 +58,16 @@
 	<a-scene id="scene" canvas="canvas: #mycanvas">
 		<canvas id="mycanvas" onclick="clickedCanvas()"></canvas>
 
+
 		<a-entity id="player" position="0 0 0">
 			<a-camera id="camera">
 				<a-cursor color="#4CC3D9" fuse></a-cursor>
 			</a-camera>
 		</a-entity>
+
+	<a-image opacity="0.1" material="src:url(http://localhost:6111/api/europeana/images?http://farm4.staticflickr.com/3751/11003769656_dcd310e91e_o.jpg)" position="2 -2 -2">
+	 <a-animation begin="material-texture-loaded" attribute="opacity" to="1.0" dur="3000"> </a-animation>
+ 	</a-image>
 
 	<a-sky color="rgb(137, 205, 200)"></a-sky>
 </a-scene>
