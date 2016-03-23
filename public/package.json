@@ -6,5 +6,8 @@
   },
   "scripts": {
     "install": "bower install"
+  },
+  "devDependencies": {
+    "bower": "^1.7.7"
   }
 }
