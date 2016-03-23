@@ -4,7 +4,7 @@
 
 var Europeana = function() {
 
-	this.URLBase = 'http://localhost:6111/api/europeana',
+	this.URLBase = location.origin + '/api/europeana',
 	this.maxPerPage = 100
 	this.maxQueueSize = 2
 	this.result = {}
